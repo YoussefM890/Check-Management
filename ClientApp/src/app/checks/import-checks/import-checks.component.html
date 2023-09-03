@@ -1,0 +1,64 @@
+<div>
+  <mat-toolbar color="primary">
+    <span>Importer des chèques</span>
+    <span class="flex-spacer"></span>
+    <button [mat-dialog-close]="{success : true}" mat-button>&times;</button>
+  </mat-toolbar>
+  <div class="flex-group p-2  button-group">
+    <div class="left">
+      <button (click)="selectFile()" class="me-1" color="primary" mat-raised-button>Browse</button>
+      <input #fileInput (change)="handleFileInput($event)" accept=".csv" style="visibility: hidden ; position: absolute"
+             type="file"/>
+      <button (click)="removeFile()" *ngIf="dataSource" color="primary" mat-raised-button>Supprimer le ficher</button>
+    </div>
+    <div class="right">
+      <ng-container *ngIf="dataSource" [ngSwitch]="buttonToShow">
+        <button (click)="approveSelectedColumns()" *ngSwitchCase="buttonToShowEnum.APPROVE" color="primary"
+                mat-raised-button>Select
+        </button>
+        <button *ngSwitchCase="buttonToShowEnum.CHECK" color="primary" mat-raised-button>Check</button>
+        <button (click)="submit()" *ngSwitchCase="buttonToShowEnum.SUBMIT" color="primary" mat-raised-button>Submit
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  <div class="content">
+
+    <table *ngIf="dataSource" [dataSource]="dataSource" class="mat-elevation-z8" mat-table>
+      <ng-container *ngFor="let col of headersObject;let j = index">
+        <ng-container [matColumnDef]="col.prop">
+          <th *matHeaderCellDef mat-header-cell>
+            <mat-form-field> <!-- Display select box only for the first column -->
+              <mat-label>{{col.name}}</mat-label>
+              <input
+                *ngIf="approved"
+                [placeholder]="col.matchedColumn"
+                [value]="col.matchedColumn"
+                disabled="true"
+                matInput
+                type="text"
+              >
+              <mat-select *ngIf="!approved" [placeholder]="col.name" [value]="col.matchedColumn">
+                <mat-option
+                  (click)="assignMatchedColumn(dbCol,col)"
+                  *ngFor="let dbCol of dbColumns"
+                  [disabled]="dbCol.matchedColumn !== null"
+                  [ngClass]="{ 'red-text': dbCol.required === true }"
+                  [value]="dbCol.prop"
+                >
+                  {{ dbCol.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </th>
+          <td *matCellDef="let element" mat-cell>
+            {{ element[col.prop]}}
+          </td>
+        </ng-container>
+      </ng-container>
+      <tr *matHeaderRowDef="tableColumnsToDisplay" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: tableColumnsToDisplay;" mat-row></tr>
+    </table>
+
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<div>
+  <div>
+    <mat-toolbar>
+      {{dialogTitle}}
+      <span class="flex-spacer"></span>
+      <button mat-button mat-dialog-close="">&times;</button>
+    </mat-toolbar>
+  </div>
+  <div>
+    <form
+      *ngIf="this.form"
+      [formGroup]="form"
+    >
+      <mat-grid-list cols="6">
+        <mat-grid-tile
+          *ngFor="let input of formInputs"
+          [colspan]="input.columnSpan"
+          [rowspan]="input.rowSpan"
+        >
+          <mat-form-field *ngIf="input.type ==='text'" appearance="outline">
+
+            <mat-label>{{input.name}}</mat-label>
+            <input
+              [formControlName]="input.prop"
+              [placeholder]="input.name"
+              [required]="input.required"
+              matInput
+            />
+          </mat-form-field>
+          <mat-form-field *ngIf="input.type ==='date'" appearance="outline">
+            <mat-label>{{input.name}}</mat-label>
+            <input
+              [formControlName]="input.prop"
+              [matDatepicker]="i"
+              [placeholder]="input.name"
+              [required]="input.required"
+              matInput
+            />
+            <mat-datepicker-toggle [for]="i" matSuffix></mat-datepicker-toggle>
+            <mat-datepicker #i></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field *ngIf="input.type==='autoComplete'" appearance="outline">
+            <mat-label>{{input.name}}</mat-label>
+            <input (input)="filterRecipients($event)"
+                   [formControlName]="input.prop"
+                   [matAutocomplete]="auto"
+                   [placeholder]="input.name"
+                   matInput
+                   type="text">
+            <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+              <mat-option *ngFor="let option of recipientsAfterFilter" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <ng-container *ngIf="input.type ==='toggle'">
+            <mat-slide-toggle [formControlName]="input.prop">
+              {{input.name}}
+            </mat-slide-toggle>
+          </ng-container>
+        </mat-grid-tile>
+        <mat-grid-tile colspan="3">
+          <button
+            (click)="onSubmit()"
+            color="primary"
+            mat-raised-button
+          >
+            {{submitButtonText}}
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </form>
+  </div>
+</div>

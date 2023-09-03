@@ -1,0 +1,122 @@
+<mat-toolbar color="disabled">
+  <mat-toolbar-row class="toolbar-row">
+    <div class="left-content">
+      <span class="text-primary">Encaissé :</span>
+      <span>{{ sumCashed | number:'1.2-2'}}</span>
+      <span class="text-primary">Non Encaissé :</span>
+      <span>{{ sumNotCashed | number:'1.2-2'}}</span>
+    </div>
+    <div class="right-content">
+      <button (click)="openImportCheckDialog()" aria-label="téléverser des chèque" color="primary" mat-mini-fab
+              matTooltip="téléverser des chèque">
+        <mat-icon>upload</mat-icon>
+      </button>
+      <button (click)="openCheckDialog(false)" aria-label="Ajouter un chèque" color="primary" mat-mini-fab
+              matTooltip="Ajouter un chèque">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row class="toolbar-row">
+    <div class="left-content">
+      <mat-form-field>
+        <mat-label>Recherche</mat-label>
+        <input (input)="checksFilter()" [(ngModel)]="globalSearchQuery" autofocus matInput placeholder="Recherche">
+      </mat-form-field>
+    </div>
+    <div class="right-content">
+      <mat-button-toggle-group [(ngModel)]="displayType">
+        <mat-button-toggle value="grouped">
+          <mat-icon>calendar_view_day</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="notGrouped">
+          <mat-icon>reorder</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <button [matMenuTriggerFor]="menu" color="primary" mat-raised-button>{{selectedFilters.status.viewValue}}</button>
+      <mat-menu #menu="matMenu">
+        <ng-container *ngFor="let filter of allFilters.status">
+          <button (click)="checksFilter(filter.value)" mat-menu-item>{{filter.viewValue}}</button>
+        </ng-container>
+      </mat-menu>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+<h3 *ngIf="this.allChecksAfterFilter.length === 0" class="centered-text mt-1">Aucun chèque trouvé</h3>
+<ng-container *ngIf="this.allChecksAfterFilter.length > 0">
+  <ng-container *ngIf="displayType === 'grouped'; else unGroupedTemplate">
+    <mat-accordion *ngFor="let month of accordionData;let i = index">
+      <mat-expansion-panel *ngIf="checksByMonthAfterFilter[i].length !== 0" hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{month.title}}
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="gap">
+              <span class="text-primary">Encaissé :</span>
+              <span>{{ sumCashedByMonth[i] | number:'1.2-2'}}</span>
+            </div>
+            <div>
+              <!--          <span class="example-spacer"></span>-->
+              <span class="text-primary">Non Encaissé :</span>
+              <span>{{ sumNotCashedByMonth[i]| number:'1.2-2'}}</span>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-template [ngTemplateOutletContext]="{checks: checksByMonthAfterFilter[i]}"
+                     [ngTemplateOutlet]="table"></ng-template>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+</ng-container>
+<!--<ng-template [ngTemplateOutlet]="table" [ngTemplateOutletContext]="{checks: allChecksAfterFilter}" *ngif="displayType === 'unGrouped'"></ng-template>-->
+<ng-template #unGroupedTemplate>
+  <ng-template [ngTemplateOutletContext]="{checks: allChecksAfterFilter}" [ngTemplateOutlet]="table"></ng-template>
+</ng-template>
+
+<ng-template #table let-checks="checks">
+  <table [dataSource]="checks" class="mat-elevation-z8" mat-table>
+    <ng-container *ngFor="let col of tableColumns;let j = index">
+      <ng-container [matColumnDef]="col.prop">
+        <th *matHeaderCellDef mat-header-cell>{{col.name}}</th>
+        <td *matCellDef="let element" mat-cell>
+          <ng-container *ngIf="col.type === 'text'">{{element[col.prop]}}</ng-container>
+          <ng-container *ngIf="col.type === 'date'">{{element[col.prop] | date: 'dd/MM/yyyy'}}</ng-container>
+          <ng-container *ngIf="col.type === 'checkbox'">
+            <mat-checkbox
+              (change)="handleIsDepositedChange(element)"
+              *ngIf="col.prop === 'isDeposited'"
+              [checked]="element.depositDate !== null"
+              [disabled]="element.depositDate !== null"
+            ></mat-checkbox>
+            <mat-checkbox
+              (change)="setCheckAsCashed(element)"
+              *ngIf="col.prop === 'isCashed'"
+              [(ngModel)]="element[col.prop]"
+            ></mat-checkbox>
+          </ng-container>
+        </td>
+      </ng-container>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th *matHeaderCellDef mat-header-cell>Options</th>
+      <td *matCellDef="let element" mat-cell>
+        <button (click)="openCheckDialog(true,element)" aria-label="Modifier le chèque" color="primary" mat-icon-button
+                matTooltip="Modifier le chèque">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          (click)="openDeleteCheckDialog(element)" aria-label="Supprimer le chèque"
+          color="warn" mat-icon-button
+          matTooltip="Supprimer le chèque"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr *matHeaderRowDef="tableColumnsToDisplay" mat-header-row></tr>
+    <tr *matRowDef="let row; columns: tableColumnsToDisplay;" mat-row></tr>
+  </table>
+</ng-template>

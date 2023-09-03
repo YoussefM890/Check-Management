@@ -1,0 +1,18 @@
+.hwa {
+  margin: 10px;
+}
+
+.multiline
+{
+  white-space: pre-wrap;
+}
+.content{
+  overflow: auto;
+}
+
+.button-group {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background: white;
+}

@@ -1,0 +1,18 @@
+﻿{
+  "CloudMedx Tunisia Pay": {
+    "id": "3",
+    "affiliates": {
+      "CloudMedx USA Office": {
+        "id": "19",
+        "departments": {
+          "Administrative Department": {
+            "id": "20",
+            "services": {
+              "id": "21"
+            }
+          }
+        }
+      }
+    }
+  }
+}

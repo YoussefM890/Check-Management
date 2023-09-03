@@ -1,0 +1,26 @@
+table {
+  width: 100%;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}
+.toolbar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-content {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Adjust this gap as needed */
+}
+
+.right-content {
+  display: flex;
+  align-items: center;
+  gap:20px
+}
+.gap{
+margin-right : 40px
+}

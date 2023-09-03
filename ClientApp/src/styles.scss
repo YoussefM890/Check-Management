@@ -1,0 +1,53 @@
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.text-disabled {
+  color: #999;
+}
+
+.text-primary {
+  color: #3f51b5 !important;
+}
+
+.mat-button-toggle {
+  background-color: #f5f5f5 !important;
+}
+
+.mat-button-toggle.mat-button-toggle-checked {
+  background-color: #3f51b5 !important;
+  color: white !important;
+}
+
+.fullscreen-dialog {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bold-text {
+  font-weight: bold; /* Making the text bold for emphasis */
+}
+
+.flex-group {
+  display: flex;
+  justify-content: space-between; /* This will push the left and right divs to the edges */
+}
+
+.left {
+  display: flex; /* Display these buttons in a row */
+  align-items: center; /* Vertically center the buttons */
+}
+
+.right {
+  display: flex; /* Display these buttons in a row */
+  align-items: center; /* Vertically center the buttons */
+}
+
+.centered-text {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
