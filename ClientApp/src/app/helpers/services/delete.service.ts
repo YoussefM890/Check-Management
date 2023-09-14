@@ -12,7 +12,7 @@ export class DeleteService {
   }
 
 
-  deleteCheck(checkNumber: number, path: string) {
-    return this.http.delete(`${this.baseUrl}/${path}/${checkNumber}`);
+  deleteCheck(checkId: number, path: string) {
+    return this.http.delete(`${this.baseUrl}/${path}/${checkId}`);
   }
 }

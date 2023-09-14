@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
@@ -31,6 +31,10 @@ import {ImportChecksComponent} from './checks/import-checks/import-checks.compon
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatSortModule} from "@angular/material/sort";
 import {ConfirmDeleteComponent} from './confirm-delete/confirm-delete.component';
+import {LoginComponent} from './login/login.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AuthInterceptor} from "./helpers/interceptors/auth.interceptor";
+import {UnauthorizedInterceptor} from "./helpers/interceptors/unauthorized.interceptor";
 
 
 @NgModule({
@@ -41,6 +45,7 @@ import {ConfirmDeleteComponent} from './confirm-delete/confirm-delete.component'
     AddCheckComponent,
     ImportChecksComponent,
     ConfirmDeleteComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -74,8 +79,12 @@ import {ConfirmDeleteComponent} from './confirm-delete/confirm-delete.component'
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     MatSortModule,
+    AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true},
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

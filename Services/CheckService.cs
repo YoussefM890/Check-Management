@@ -5,19 +5,18 @@ namespace Check_Management.Services;
 
 public class CheckService
 {
-    public static List<Check> GetAllChecks()
+    public static List<Check> GetChecksByUserId(int userId)
     {
         using var db = new ApplicationDbContext();
-        return db.Checks.ToList();
+        return db.Checks.Where(c => c.UserId == userId).ToList();
     }
 
-    public static Check AddCheck(CheckIn checkIn)
+    public static Check AddCheck(CheckIn checkIn, int userId)
     {
         using var db = new ApplicationDbContext();
-        Console.WriteLine(checkIn.CashDate);
         var check = CustomMapper.Map<CheckIn, Check>(checkIn);
         check.CreatedAt = DateTime.Now;
-        check.UserId = 4;
+        check.UserId = userId;
         db.Checks.Add(check);
         db.SaveChanges();
         return check;
@@ -27,7 +26,7 @@ public class CheckService
     public static Check EditCheck(CheckIn checkIn)
     {
         using var db = new ApplicationDbContext();
-        var check = db.Checks.FirstOrDefault(c => c.CheckNumber == checkIn.CheckNumber);
+        var check = db.Checks.FirstOrDefault(c => c.CheckId == checkIn.CheckId);
         if (check == null)
         {
             throw new Exception("Check not found");
@@ -45,10 +44,10 @@ public class CheckService
     }
 
     //delete check
-    public static void DeleteCheck(int checkNumber)
+    public static void DeleteCheck(int checkId)
     {
         using var db = new ApplicationDbContext();
-        var check = db.Checks.FirstOrDefault(c => c.CheckNumber == checkNumber);
+        var check = db.Checks.FirstOrDefault(c => c.CheckId == checkId);
         if (check == null)
         {
             throw new Exception("Check not found");
@@ -59,10 +58,10 @@ public class CheckService
     }
 
     //patch check deposit date
-    public static Object SetCheckDepositDate(int checkNumber)
+    public static Object SetCheckDepositDate(int checkId)
     {
         using var db = new ApplicationDbContext();
-        var check = db.Checks.FirstOrDefault(c => c.CheckNumber == checkNumber);
+        var check = db.Checks.FirstOrDefault(c => c.CheckId == checkId);
         if (check == null)
         {
             throw new Exception("Check not found");
@@ -74,10 +73,10 @@ public class CheckService
         return new { depositDate = check.DepositDate };
     }
 
-    public static Object SetCheckAsCashed(int checkNumber)
+    public static Object SetCheckAsCashed(int checkId)
     {
         using var db = new ApplicationDbContext();
-        var check = db.Checks.FirstOrDefault(c => c.CheckNumber == checkNumber);
+        var check = db.Checks.FirstOrDefault(c => c.CheckId == checkId);
         if (check == null)
         {
             throw new Exception("Check not found");
@@ -95,5 +94,18 @@ public class CheckService
         check.UpdatedAt = DateTime.Now;
         db.SaveChanges();
         return response;
+    }
+
+    //check belongs to user
+    public static bool CheckBelongsToUser(int checkId, int userId)
+    {
+        using var db = new ApplicationDbContext();
+        var check = db.Checks.FirstOrDefault(c => c.CheckId == checkId);
+        if (check == null)
+        {
+            throw new Exception("Check not found");
+        }
+
+        return check.UserId == userId;
     }
 }

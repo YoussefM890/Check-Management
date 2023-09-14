@@ -1,14 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Check_Management.Models;
+﻿namespace Check_Management.Models;
 
 public class Check
 {
     public int CheckId { get; set; }
-
-    [Required(ErrorMessage = "Check Number is requiredss")]
     public int? CheckNumber { get; set; }
-
     public bool IsCashed { get; set; }
     public decimal Amount { get; set; }
     public string? Notes { get; set; }
@@ -16,6 +11,7 @@ public class Check
     public DateTime CashDate { get; set; }
     public DateTime? DepositDate { get; set; }
     public DateTime CreatedAt { get; set; }
+
     public DateTime? UpdatedAt { get; set; }
 
     //relationship
@@ -25,14 +21,14 @@ public class Check
 
 public class CheckIn
 {
-    [Required(ErrorMessage = "Check Number is required")]
+    public int? CheckId { get; set; }
     public int? CheckNumber { get; set; }
-
+    public int? UserId { get; set; }
     public bool IsCashed { get; set; }
     public decimal Amount { get; set; }
     public string? Notes { get; set; }
     public string Recipient { get; set; }
     public DateTime CashDate { get; set; }
-    public DateTime? DepositDate { get; set; } // New column for when funds are deposited
+    public DateTime? DepositDate { get; set; }
 }
 //create a dummy json for checkin

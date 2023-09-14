@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {CheckService} from "../services/check.service";
+import {Component, OnInit} from '@angular/core';
+import {CheckService} from "../helpers/services/check.service";
 import {IResponse} from "../../shared";
 import {AccordionData, StatusFilter, TableColumn} from "./static";
 import {MatDialog} from "@angular/material/dialog";
@@ -14,10 +14,8 @@ import {ConfirmDeleteComponent} from "../confirm-delete/confirm-delete.component
   templateUrl: './checks.component.html',
   styleUrls: ['./checks.component.css']
 })
-export class ChecksComponent {
-  checksByMonth = [[], [], [], [], [], [], [], [], [], [], [], []];
+export class ChecksComponent implements OnInit {
   checksByMonthAfterFilter = [[], [], [], [], [], [], [], [], [], [], [], []];
-  localSearchQuery: string[] = [];
   globalSearchQuery = '';
   allChecks: any[];
   allChecksAfterFilter: any[] = [];
@@ -47,9 +45,11 @@ export class ChecksComponent {
 
   getAllChecks() {
     this.checkService.getAllChecks().subscribe((res: IResponse) => {
+      if (!res.success) {
+        this.toastr.error("Une erreur est survenue lors de la récupération des chèques. Veuillez réessayer plus tard.");
+        return;
+      }
       this.allChecks = res.data;
-      this.sumCashed = this.allChecks.filter(check => check.isCashed).reduce((acc, check) => acc + check.amount, 0);
-      this.sumNotCashed = this.allChecks.filter(check => !check.isCashed).reduce((acc, check) => acc + check.amount, 0);
       this.allChecksAfterFilter = [...this.allChecks]
       this.separateChecksByMonth();
 
@@ -57,19 +57,21 @@ export class ChecksComponent {
   }
 
   separateChecksByMonth() {
-    this.checksByMonthAfterFilter = [[], [], [], [], [], [], [], [], [], [], [], []]; //number of months
+    this.checksByMonthAfterFilter = [[], [], [], [], [], [], [], [], [], [], [], []];
+    this.sumCashedByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.sumNotCashedByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     for (let check of this.allChecksAfterFilter) {
       let monthIndex = new Date(check.cashDate).getMonth();
       this.sumCashedByMonth[monthIndex] += check.isCashed ? check.amount : 0;
       this.sumNotCashedByMonth[monthIndex] += !check.isCashed ? check.amount : 0;
       this.checksByMonthAfterFilter[monthIndex].push(check);
       this.checksByMonthAfterFilter[monthIndex] = [...this.checksByMonthAfterFilter[monthIndex]];
-      // this.checksByMonthAfterFilter[monthIndex] = [...this.checksByMonth[monthIndex]];
     }
+    this.calculateSums();
   }
 
   handleIsDepositedChange(element: any): void {
-    this.checkService.setCheckDepositDate(element.checkNumber).subscribe((res: IResponse) => {
+    this.checkService.setCheckDepositDate(element.checkId).subscribe((res: IResponse) => {
       if (res.success) {
         element.depositDate = res.data.depositDate;
       } else {
@@ -81,7 +83,7 @@ export class ChecksComponent {
   }
 
   setCheckAsCashed(element: any): void {
-    this.checkService.setCheckAsCashed(element.checkNumber).subscribe((res: IResponse) => {
+    this.checkService.setCheckAsCashed(element.checkId).subscribe((res: IResponse) => {
       if (res.success) {
         element.isCashed = res.data.isCashed;
         if (res.data.depositDate) element.depositDate = res.data.depositDate;
@@ -125,7 +127,7 @@ export class ChecksComponent {
     this.fillRecipients();
     const ref = this.dialog.open(AddCheckComponent, {
       width: '600px',
-      height: '500px',
+      height: '510px',
       data:
         {
           recipients: this.recipients,
@@ -165,7 +167,7 @@ export class ChecksComponent {
       height: '150px',
       data: {
         serviceName: 'deleteCheck',
-        deleteId: element.checkNumber,
+        deleteId: element.checkId,
         successMessage: 'chèque',
         path: 'checks'
       }
@@ -175,5 +177,10 @@ export class ChecksComponent {
         this.getAllChecks()
       }
     });
+  }
+
+  calculateSums() {
+    this.sumCashed = this.allChecks.filter(check => check.isCashed).reduce((acc, check) => acc + check.amount, 0);
+    this.sumNotCashed = this.allChecks.filter(check => !check.isCashed).reduce((acc, check) => acc + check.amount, 0);
   }
 }

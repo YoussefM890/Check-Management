@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ToastrService} from "ngx-toastr";
-import {DeleteService} from "../services/delete.service";
+import {DeleteService} from "../helpers/services/delete.service";
 import {IConfirmDeleteComponentData} from "../models/interfaces/modalData";
 import {IResponse} from "../../shared";
 

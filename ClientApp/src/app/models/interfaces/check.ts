@@ -1,4 +1,5 @@
 export interface Check {
+  checkId: number
   checkNumber: number
   isCashed: boolean
   amount: number
@@ -6,4 +7,5 @@ export interface Check {
   recipient: string
   cashDate: Date
   depositDate?: Date
+  userId: number
 }

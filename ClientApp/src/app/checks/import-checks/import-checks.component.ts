@@ -4,7 +4,7 @@ import {ToastrService} from "ngx-toastr";
 import {MatTableDataSource} from "@angular/material/table";
 import {Papa} from "ngx-papaparse";
 import {ButtonToShowEnum, Columns, IHeaderObject} from "./static";
-import {CheckService} from "../../services/check.service";
+import {CheckService} from "../../helpers/services/check.service";
 import {Check} from "../../models/interfaces/check";
 import {IResponse} from "../../../shared";
 import {ImportUtils} from "./importUtils";
@@ -53,29 +53,6 @@ export class ImportChecksComponent extends ImportUtils implements OnInit {
       this.file = null;
       this.toastr.error('Merci de choisir un fichier valide');
     }
-  }
-
-  upload() {
-    // if (this.file) {
-    //   this.loaded = false;
-    //   this.warning = null;
-    //   this.employeeService.uploadfile(this.file, this.data.company_id).subscribe(
-    //     (res: any) => {
-    //       this.loaded = true;
-    //       if (res.status === 200) {
-    //         this.toastr.success('Fichier importé avec succès');
-    //         this.dialogRef.close();
-    //       } else if (res.status === 400) {
-    //         this.warning = res.message;
-    //       }
-    //     },
-    //     (err) => {
-    //       this.loaded = true;
-    //       this.warning = "Une erreur en cours de l'import! veuillez verifier le format du fichier";
-    //     });
-    // } else {
-    //   this.toastr.error('Merci de choisir un fichier!');
-    // }
   }
 
   handleFileInput(event: any): void {

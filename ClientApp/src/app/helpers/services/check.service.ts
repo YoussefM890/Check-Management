@@ -22,12 +22,12 @@ export class CheckService {
     return this.http.put(this.baseUrl, check);
   }
 
-  setCheckDepositDate(checkNumber: number) {
-    return this.http.patch(`${this.baseUrl}/deposit-date/${checkNumber}`, null);
+  setCheckDepositDate(checkId: number) {
+    return this.http.patch(`${this.baseUrl}/deposit-date/${checkId}`, null);
   }
 
-  setCheckAsCashed(checkNumber: number) {
-    return this.http.patch(`${this.baseUrl}/set-cashed/${checkNumber}`, null);
+  setCheckAsCashed(checkId: number) {
+    return this.http.patch(`${this.baseUrl}/set-cashed/${checkId}`, null);
   }
 
 }

@@ -1,0 +1,55 @@
+<mat-card>
+  <form
+    #logForm="ngForm"
+    (ngSubmit)="login()"
+    [formGroup]="loginForm"
+    novalidate
+  >
+    <mat-form-field appearence="fill">
+      <input
+        formControlName="email"
+        matInput
+        placeholder="email"
+        required
+        type="email"
+      />
+      <mat-error *ngIf="formErrors.email">
+        {{ formErrors.email }}
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field appearence="fill">
+      <input
+        [type]="hide ? 'password' : 'text'"
+        formControlName="password"
+        matInput
+        placeholder="password"
+        required
+        type="text"
+      />
+      <a
+        (click)="changePasswordVisibility()"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide"
+        mat-icon-button
+        matSuffix
+      >
+        <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+      </a>
+      <mat-error *ngIf="formErrors.password">
+        {{ formErrors.password }}
+      </mat-error>
+    </mat-form-field>
+    <button
+      [disabled]="loginForm.invalid"
+      class="right"
+      color="primary"
+      mat-flat-button
+      type="submit"
+    >
+      Se Connecter
+    </button>
+  </form>
+  <button class="right" color="primary" mat-button routerLink="/forgotPassword">
+    Mot de passe oublié
+  </button>
+</mat-card>

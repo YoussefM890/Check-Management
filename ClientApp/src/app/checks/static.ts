@@ -116,12 +116,14 @@ const CheckForm: ICheckForm[] = [
   {
     prop: 'checkNumber',
     name: 'Numéro de chèque',
-    required: true,
+    type: 'text',
+    required: false,
 
   },
   {
     prop: 'amount',
     name: 'Montant',
+    type: 'number',
     required: true,
   },
   {

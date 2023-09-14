@@ -3,7 +3,7 @@ import {CheckForm} from "../checkFormUtils";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
-import {CheckService} from "../../services/check.service";
+import {CheckService} from "../../helpers/services/check.service";
 import {IResponse} from "../../../shared";
 import {IAddCheckComponentData} from "../../models/interfaces/modalData";
 
@@ -72,10 +72,8 @@ export class AddCheckComponent extends CheckForm implements OnInit {
 
   onSubmit() {
     let form = this.form.getRawValue()
-    console.log(form)
     form.cashDate = form.cashDate = this.getNaiveDate(form.cashDate);
     form.depositDate ? form.depositDate = this.getNaiveDate(form.depositDate) : null;
-    console.log(form)
     this.checkService[this.serviceMethod](form).subscribe((res: IResponse) => {
       if (res.success) {
         this.toastr.success(this.successMessage);
@@ -86,7 +84,7 @@ export class AddCheckComponent extends CheckForm implements OnInit {
       }
     }, err => {
       this.toastr.error(this.errorMessage);
-      this.dialogRef.close({success: false});
+      // this.dialogRef.close({success: false});
     });
   }
 

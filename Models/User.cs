@@ -10,4 +10,6 @@ public class User
     public string HashedPassword { get; set; }
     public ICollection<Check> Checks { get; set; }
     public ICollection<UserRole> UserRoles { get; set; }
+    public bool HaveAccess { get; set; } = false;
+    public bool IsAuthenticated { get; set; } = false;
 }

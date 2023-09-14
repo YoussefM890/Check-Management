@@ -11,21 +11,25 @@
       *ngIf="this.form"
       [formGroup]="form"
     >
-      <mat-grid-list cols="6">
+      <mat-grid-list cols="6" rowHeight="110px">
         <mat-grid-tile
           *ngFor="let input of formInputs"
           [colspan]="input.columnSpan"
           [rowspan]="input.rowSpan"
         >
-          <mat-form-field *ngIf="input.type ==='text'" appearance="outline">
+          <mat-form-field *ngIf="input.type === 'text' || input.type === 'number' " appearance="outline">
 
             <mat-label>{{input.name}}</mat-label>
             <input
               [formControlName]="input.prop"
+              [type]="input.type"
               [placeholder]="input.name"
               [required]="input.required"
               matInput
             />
+            <mat-error *ngIf="formErrors[input.prop]" class="error-text">
+              {{ formErrors[input.prop] }}
+            </mat-error>
           </mat-form-field>
           <mat-form-field *ngIf="input.type ==='date'" appearance="outline">
             <mat-label>{{input.name}}</mat-label>
@@ -64,6 +68,7 @@
             (click)="onSubmit()"
             color="primary"
             mat-raised-button
+            [disabled]="form.invalid"
           >
             {{submitButtonText}}
           </button>

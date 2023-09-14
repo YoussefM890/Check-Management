@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using AdminPanelv1.Services;
 using Check_Management.Models;
+using Check_Management.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Check_Management.Controllers
@@ -12,34 +12,37 @@ namespace Check_Management.Controllers
         [Route("login")]
         public IActionResult Login(LoginIn userIn)
         {
-            User? validatedUser = AuthService.ValidateUserCredentials(userIn.Email, userIn.Password);
-            if (validatedUser != null)
+            User validatedUser;
+            try
             {
-                // User credentials are valid
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, validatedUser.Id.ToString()),
-                    new Claim(ClaimTypes.Email, validatedUser.Email),
-                    new Claim("first_name", validatedUser.FirstName), // Custom claim type for first name
-                    new Claim("last_name", validatedUser.LastName), // Custom claim type for last name
-                    // new Claim(ClaimTypes.Role, validatedUser.Role)
-                };
-                var user = CustomMapper.Map<User, LoginOut>(validatedUser);
-                var token = AuthService.GenerateBearerToken(expiryInMinutes: 1440, claims);
-                var responseData = new
-                {
-                    token,
-                    user
-                };
-                var response = Utils.GetResponseObject(200, "Login successful.", responseData);
-                return Ok(response);
+                validatedUser = AuthService.ValidateUserCredentials(userIn.Email, userIn.Password);
             }
-            else
+            catch (Exception e)
             {
-                // User credentials are invalid
-                var response = Utils.GetResponseObject(401, "Invalid email or password");
-                return Ok(response);
+                return Ok(Utils.GetResponseObject(401, e.Message));
             }
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, validatedUser.Id.ToString()),
+                new Claim(ClaimTypes.Email, validatedUser.Email),
+                new Claim("first_name", validatedUser.FirstName),
+                new Claim("last_name", validatedUser.LastName),
+            };
+            foreach (var userRole in validatedUser.UserRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+            }
+
+            var user = CustomMapper.Map<User, LoginOut>(validatedUser);
+            var token = AuthService.GenerateBearerToken(expiryInMinutes: 1440, claims);
+            var responseData = new
+            {
+                token,
+                user
+            };
+            var response = Utils.GetResponseObject(200, "Login successful.", responseData);
+            return Ok(response);
         }
 
         [HttpPost]
@@ -49,6 +52,18 @@ namespace Check_Management.Controllers
             var user = AuthService.RegisterUser(userIn);
             var response = Utils.GetResponseObject(201, "User created successfully.", user);
             return Ok(response);
+        }
+
+        //logout endpoint
+        [HttpGet]
+        [Route("logout")]
+        public IActionResult Logout()
+        {
+            return ControllerUtils.HandleError(this, () =>
+            {
+                AuthService.Logout(Request.Headers["Authorization"].ToString().Split(" ")[1]);
+                return Ok(Utils.GetResponseObject(200, "User logged out successfully."));
+            }, 500);
         }
     }
 }

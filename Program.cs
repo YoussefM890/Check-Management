@@ -1,4 +1,6 @@
+using System.Configuration;
 using System.Text;
+using Check_Management;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,8 @@ builder.Services.AddCors(options =>
             .AllowCredentials()
             .WithExposedHeaders("Authorization"));
 });
+IConfiguration configuration = builder.Configuration;
+IConfigurationSection jwtSettings = configuration.GetSection("JwtSettings");
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
@@ -23,14 +27,18 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "localhost",
-            ValidAudience = "localhost",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_best_secret_key_ever_1234567890"))
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
         };
     });
 
 builder.Services.AddAuthorization();
-
+//remove the cycle in recursive queries
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 
 var app = builder.Build();
 
@@ -46,6 +54,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<AccessMiddleware>();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",

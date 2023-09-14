@@ -27,6 +27,7 @@
             "allowedCommonJsDependencies": [
               "oidc-client"
             ],
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets"
             ],
